@@ -8,30 +8,29 @@ services:
     image: nginx:stable-alpine
     container_name: nginx
     ports:
-      - "8080:80"
+      - "3000:80"
     volumes:
       - ./src:/var/www/html
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - php
-      - mysql
+      - postgres
     networks:
       - laravel
 
-  mysql:
-    image: mysql:5.7.22
-    container_name: mysql
+  postgres:
+    image: postgres
+    container_name: postgres
     restart: unless-stopped
     tty: true
+    volumes: 
+      - ./pg-init-scripts:/docker-entrypoint-initdb.d
     ports:
-      - "3306:3306"
+      - "5532:5432"
     environment:
-      MYSQL_DATABASE: homestead
-      MYSQL_USER: homestead
-      MYSQL_PASSWORD: secret
-      MYSQL_ROOT_PASSWORD: secret
-      SERVICE_TAGS: dev
-      SERVICE_NAME: mysql
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_MULTIPLE_DATABASES=laravel,laravel_testing
     networks:
       - laravel
 
@@ -40,6 +39,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: php
+    user: 1000:1000
     volumes:
       - ./src:/var/www/html
     ports:
@@ -74,7 +74,7 @@ services:
     volumes:
       - ./src:/var/www/html
     depends_on:
-      - mysql
+      - postgres
     working_dir: /var/www/html
     entrypoint: ['/var/www/html/artisan']
     networks:
