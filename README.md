@@ -17,9 +17,9 @@ then from this cloned respository's root run `docker-compose up -d --build`. Ope
 
 **New:** Three new containers have been added that handle Composer, NPM, and Artisan commands without having to have these platforms installed on your local computer. Use the following command templates from your project root, modifiying them to fit your particular use case:
 
-- `docker-compose run --rm composer update`
-- `docker-compose run --rm npm run dev`
-- `docker-compose run --rm artisan migrate` 
+- ```docker-compose run --rm --user `id -u`:`id -g` composer update```
+- ```docker-compose run --rm --user `id -u`:`id -g` npm run dev```
+- ```docker-compose run --rm --user `id -u`:`id -g` artisan migrate```
 
 Containers created and their ports (if used) are as follows:
 
